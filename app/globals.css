@@ -21,5 +21,9 @@ button, input, textarea, select { font: inherit; }
 .status-active { background: #dff5d7; color: #2d6b37; }
 .status-disabled { background: #f7dfdc; color: #9b4037; }
 .status-unassigned { background: #edf0e9; color: var(--muted); }
-.edit-action { color: var(--green); font-weight: 600; text-decoration: underline; }
-.delete-action { margin-left: 0.75rem; color: #9b4037; font-weight: 600; text-decoration: underline; }
+.table-actions { display: flex; justify-content: flex-end; gap: 0.25rem; }
+.table-actions button { display: inline-flex; width: 2rem; height: 2rem; align-items: center; justify-content: center; border: 1px solid transparent; cursor: pointer; }
+.table-actions button:hover, .table-actions button:focus-visible { border-color: var(--line); background: var(--paper); outline: none; }
+.table-actions svg { width: 1rem; height: 1rem; fill: none; stroke: currentColor; stroke-linecap: round; stroke-linejoin: round; stroke-width: 1.8; }
+.view-action, .edit-action { color: var(--green); }
+.delete-action { color: #9b4037; }
