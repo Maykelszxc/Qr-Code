@@ -1,0 +1,25 @@
+@import url('https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Space+Grotesk:wght@400;500;600;700&display=swap');
+@import "tailwindcss";
+
+:root { --ink: #17211b; --muted: #718078; --paper: #f4f5ef; --line: #dbe1d8; --green: #174e3d; --lime: #c9ef6b; }
+
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--paper); color: var(--ink); font-family: 'Space Grotesk', sans-serif; }
+button, input, textarea, select { font: inherit; }
+.mono { font-family: 'DM Mono', monospace; }
+.grain { background-image: radial-gradient(#b9c4b7 0.7px, transparent 0.7px); background-size: 13px 13px; }
+.relay-table { border: 1px solid var(--line); background: white; font-size: 0.875rem; }
+.relay-table .tabulator-header { background: #edf0e9; border-bottom: 1px solid var(--line); }
+.relay-table .tabulator-col { background: transparent; border-right: 1px solid var(--line); color: var(--muted); font-size: 0.7rem; letter-spacing: 0.08em; text-transform: uppercase; }
+.relay-table .tabulator-row { border-bottom: 1px solid var(--line); background: white; }
+.relay-table .tabulator-row:hover { background: #fafbf8; }
+.relay-table .tabulator-cell { border-right: 0; padding: 1rem 1.25rem; }
+.relay-table .tabulator-footer { border-top: 1px solid var(--line); background: #edf0e9; }
+.mono-link { font-family: 'DM Mono', monospace; font-weight: 500; text-decoration: underline; }
+.muted { color: var(--muted); }
+.status { display: inline-block; padding: 0.25rem 0.5rem; font-size: 0.75rem; }
+.status-active { background: #dff5d7; color: #2d6b37; }
+.status-disabled { background: #f7dfdc; color: #9b4037; }
+.status-unassigned { background: #edf0e9; color: var(--muted); }
+.edit-action { color: var(--green); font-weight: 600; text-decoration: underline; }
+.delete-action { margin-left: 0.75rem; color: #9b4037; font-weight: 600; text-decoration: underline; }
