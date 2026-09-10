@@ -5,5 +5,10 @@ export function qrUrl(code: string) {
 }
 
 export async function generateQrPng(code: string) {
-  return QRCode.toBuffer(qrUrl(code), { type: "png", width: 800, margin: 2, errorCorrectionLevel: "M" });
+  return QRCode.toBuffer(qrUrl(code), {
+    type: "png",
+    width: 800,
+    margin: 2,
+    errorCorrectionLevel: "M",
+  });
 }

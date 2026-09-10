@@ -26,7 +26,7 @@ npm run dev
 
 Open `http://localhost:3000/admin/login`. Generate a batch, download the ZIP of PNGs, then assign each code a business and review URL from its detail page.
 
-The public redirect is `/r/{short_code}`. Active codes log a scan event without delaying the 302 redirect. Unknown, unassigned, and disabled codes go to `/inactive`.
+The public redirect is `/r/{short_code}`. Active codes log a scan event without delaying the 302 redirect. Unknown, unassigned, empty-URL, and disabled codes go to `/inactive`.
 
 ## Deploy to Vercel
 
