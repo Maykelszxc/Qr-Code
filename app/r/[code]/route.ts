@@ -7,7 +7,7 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
   const normalizedCode = code.toUpperCase();
   const { data } = await supabase.from("qr_codes").select("id,target_url,status").eq("short_code", normalizedCode).maybeSingle();
   if (!data || data.status !== "active" || !data.target_url) {
-    const fallbackUrl = new URL("/inactive", request.url);
+    const fallbackUrl = new URL("/unassigned", request.url);
     fallbackUrl.searchParams.set("code", normalizedCode);
     return NextResponse.rewrite(fallbackUrl);
   }
