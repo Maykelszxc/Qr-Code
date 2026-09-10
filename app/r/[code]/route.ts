@@ -7,9 +7,9 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
   const normalizedCode = code.toUpperCase();
   const { data } = await supabase.from("qr_codes").select("id,target_url,status").eq("short_code", normalizedCode).maybeSingle();
   if (!data || data.status !== "active" || !data.target_url) {
-    const inactiveUrl = new URL("/inactive", request.url);
-    if (!data || data.status === "unassigned" || !data.target_url) inactiveUrl.searchParams.set("code", normalizedCode);
-    return NextResponse.redirect(inactiveUrl, 302);
+    const fallbackUrl = new URL("/inactive", request.url);
+    fallbackUrl.searchParams.set("code", normalizedCode);
+    return NextResponse.rewrite(fallbackUrl);
   }
   const { error: scanError } = await supabase.from("scan_events").insert({ qr_code_id: data.id, user_agent: request.headers.get("user-agent"), referrer: request.headers.get("referer") });
   if (scanError) console.error("Failed to record QR scan", scanError);
