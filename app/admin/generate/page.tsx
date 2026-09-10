@@ -5,9 +5,120 @@ import { FormEvent, useState } from "react";
 import { createClient } from "@/lib/supabase/browser";
 import { generateShortCode } from "@/lib/codes";
 
-export default function GeneratePage() { const [amount, setAmount] = useState(25); const [codes, setCodes] = useState<string[]>([]); const [busy, setBusy] = useState(false); const [message, setMessage] = useState("");
-  async function generate(event: FormEvent) { event.preventDefault(); setBusy(true); setMessage(""); const client = createClient(); const fresh = Array.from({ length: Math.min(Math.max(amount, 1), 500) }, generateShortCode); const { error } = await client.from("qr_codes").insert(fresh.map(short_code => ({ short_code }))); if (error) setMessage(error.message); else { setCodes(fresh); setMessage(`${fresh.length} codes added to inventory.`); } setBusy(false); }
-  async function download() { const zip = new JSZip(); const base = process.env.NEXT_PUBLIC_APP_URL ?? window.location.origin; await Promise.all(codes.map(async code => { const dataUrl = await QRCode.toDataURL(`${base}/r/${code}`, { width: 800, margin: 2 }); const image = await fetch(dataUrl); zip.file(`${code}.png`, await image.arrayBuffer()); })); const blob = await zip.generateAsync({ type: "blob" }); const link = document.createElement("a"); link.href = URL.createObjectURL(blob); link.download = `relay-qr-${new Date().toISOString().slice(0, 10)}.zip`; link.click(); URL.revokeObjectURL(link.href); }
-  const isLocalUrl = (process.env.NEXT_PUBLIC_APP_URL ?? "").includes("localhost");
-  return <div className="p-6 md:p-10"><p className="mono mb-3 text-xs text-[var(--muted)]">INVENTORY / BATCH GENERATOR</p><h1 className="mb-3 text-4xl font-semibold tracking-tight">Make a batch.</h1><p className="mb-10 max-w-lg text-[var(--muted)]">Create numbered, unassigned cards before they have a customer. Each code stays yours until you attach a destination.</p>{isLocalUrl && <div className="mb-6 max-w-xl border border-[#e2bf6a] bg-[#fff6d8] p-4 text-sm text-[#795b18]"><strong>Local testing URL:</strong> these QR images currently point to localhost and will not work from a phone. Set <span className="mono">NEXT_PUBLIC_APP_URL</span> to your Vercel domain before printing.</div>}<form onSubmit={generate} className="max-w-xl border border-[var(--line)] bg-white p-6"><label className="block text-sm font-medium">How many codes?<input type="number" min="1" max="500" value={amount} onChange={e => setAmount(Number(e.target.value))} className="mt-2 block w-32 border border-[var(--line)] px-3 py-3 mono outline-none focus:border-[var(--green)]" /></label><button disabled={busy} className="mt-8 bg-[var(--green)] px-5 py-3 text-sm font-semibold text-white disabled:opacity-50">{busy ? "Generating..." : "Generate codes"}</button>{message && <p className="mt-4 text-sm text-[var(--muted)]">{message}</p>}</form>{codes.length > 0 && <section className="mt-8 max-w-xl border border-[var(--line)] bg-[#edf0e9] p-6"><div className="flex items-center justify-between gap-4"><div><h2 className="font-semibold">Batch ready</h2><p className="text-sm text-[var(--muted)]">{codes.length} PNGs, ready for the printer.</p></div><button onClick={download} className="bg-[var(--lime)] px-4 py-3 text-sm font-semibold">Download ZIP</button></div><p className="mono mt-5 text-xs leading-6 text-[var(--muted)]">{codes.slice(0, 12).join("  ")}{codes.length > 12 ? "  ..." : ""}</p></section>}</div>;
+export default function GeneratePage() {
+  const [amount, setAmount] = useState(25);
+  const [codes, setCodes] = useState<string[]>([]);
+  const [busy, setBusy] = useState(false);
+  const [message, setMessage] = useState("");
+  async function generate(event: FormEvent) {
+    event.preventDefault();
+    setBusy(true);
+    setMessage("");
+    const client = createClient();
+    const fresh = Array.from(
+      { length: Math.min(Math.max(amount, 1), 500) },
+      generateShortCode,
+    );
+    const { error } = await client
+      .from("qr_codes")
+      .insert(fresh.map((short_code) => ({ short_code })));
+    if (error) setMessage(error.message);
+    else {
+      setCodes(fresh);
+      setMessage(`${fresh.length} codes added to inventory.`);
+    }
+    setBusy(false);
+  }
+  async function download() {
+    const zip = new JSZip();
+    const base = process.env.NEXT_PUBLIC_APP_URL ?? window.location.origin;
+    await Promise.all(
+      codes.map(async (code) => {
+        const dataUrl = await QRCode.toDataURL(`${base}/r/${code}`, {
+          width: 800,
+          margin: 2,
+        });
+        const image = await fetch(dataUrl);
+        zip.file(`${code}.png`, await image.arrayBuffer());
+      }),
+    );
+    const blob = await zip.generateAsync({ type: "blob" });
+    const link = document.createElement("a");
+    link.href = URL.createObjectURL(blob);
+    link.download = `relay-qr-${new Date().toISOString().slice(0, 10)}.zip`;
+    link.click();
+    URL.revokeObjectURL(link.href);
+  }
+  const isLocalUrl = (process.env.NEXT_PUBLIC_APP_URL ?? "").includes(
+    "localhost",
+  );
+  return (
+    <div className="p-6 md:p-10">
+      <p className="mono mb-3 text-xs text-[var(--muted)]">
+        INVENTORY / BATCH GENERATOR
+      </p>
+      <h1 className="mb-3 text-4xl font-semibold tracking-tight">
+        Make a batch.
+      </h1>
+      <p className="mb-10 max-w-lg text-[var(--muted)]">
+        Create numbered, unassigned cards before they have a customer. Each code
+        stays yours until you attach a destination.
+      </p>
+      {isLocalUrl && (
+        <div className="mb-6 max-w-xl border border-[#e2bf6a] bg-[#fff6d8] p-4 text-sm text-[#795b18]">
+          <strong>Local testing URL:</strong> these QR images currently point to
+          localhost and will not work from a phone. Set{" "}
+          <span className="mono">NEXT_PUBLIC_APP_URL</span> to your Vercel
+          domain before printing.
+        </div>
+      )}
+      <form
+        onSubmit={generate}
+        className="max-w-xl border border-[var(--line)] bg-white p-6"
+      >
+        <label className="block text-sm font-medium">
+          How many codes?
+          <input
+            type="number"
+            min="1"
+            max="500"
+            value={amount}
+            onChange={(e) => setAmount(Number(e.target.value))}
+            className="mt-2 block w-32 border border-[var(--line)] px-3 py-3 mono outline-none focus:border-[var(--green)]"
+          />
+        </label>
+        <button
+          disabled={busy}
+          className="mt-8 bg-[var(--green)] px-5 py-3 text-sm font-semibold text-white disabled:opacity-50"
+        >
+          {busy ? "Generating..." : "Generate codes"}
+        </button>
+        {message && (
+          <p className="mt-4 text-sm text-[var(--muted)]">{message}</p>
+        )}
+      </form>
+      {codes.length > 0 && (
+        <section className="mt-8 max-w-xl border border-[var(--line)] bg-[#edf0e9] p-6">
+          <div className="flex items-center justify-between gap-4">
+            <div>
+              <h2 className="font-semibold">Batch ready</h2>
+              <p className="text-sm text-[var(--muted)]">
+                {codes.length} PNGs, ready for the printer.
+              </p>
+            </div>
+            <button
+              onClick={download}
+              className="bg-[var(--lime)] px-4 py-3 text-sm font-semibold"
+            >
+              Download ZIP
+            </button>
+          </div>
+          <p className="mono mt-5 text-xs leading-6 text-[var(--muted)]">
+            {codes.slice(0, 12).join("  ")}
+            {codes.length > 12 ? "  ..." : ""}
+          </p>
+        </section>
+      )}
+    </div>
+  );
 }
